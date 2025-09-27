@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "av-simulation"
+version = "1.0.0"
+description = "Autonomous Vehicle Simulation Environment"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "AV Simulation Team"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "pygame==2.5.2",
+    "numpy==1.24.3",
+    "opencv-python==4.8.1.78",
+    "torch==2.0.1",
+    "matplotlib==3.7.1",
+    "scipy==1.10.1",
+    "Pillow==10.0.0",
+]
+
+[project.scripts]
+av-simulation = "scripts.launcher:main"
