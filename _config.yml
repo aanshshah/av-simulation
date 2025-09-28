@@ -7,7 +7,6 @@ url: "https://aanshshah.github.io"
 baseurl: "/av-simulation"
 
 # Theme settings
-theme: minima
 remote_theme: pages-themes/cayman@v0.2.0
 
 # Navigation
