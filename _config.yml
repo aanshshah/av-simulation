@@ -1,0 +1,61 @@
+# GitHub Pages configuration for AV Simulation
+title: "Autonomous Vehicle Simulation Environment"
+description: "Recreation of the simulation environment from Safety and Risk Analysis of Autonomous Vehicles Using Computer Vision and Neural Networks"
+author: "Aansh Shah"
+email: "aansh.shah@gmail.com"
+url: "https://aanshshah.github.io"
+baseurl: "/av-simulation"
+
+# Theme settings
+theme: minima
+remote_theme: pages-themes/cayman@v0.2.0
+
+# Navigation
+header_pages:
+  - index.md
+  - documentation.md
+  - examples.md
+  - notebooks.md
+  - api.md
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Markdown settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - src/
+  - tests/
+  - __pycache__/
+  - "*.pyc"
+  - requirements*.txt
+  - setup.py
+  - run_tests.py
+  - test_*.py
+
+# Include files
+include:
+  - _pages
+  - assets

@@ -6,7 +6,7 @@ including lane detection, behavioral planning, and various driving scenarios.
 """
 
 __version__ = "1.0.0"
-__author__ = "AV Simulation Team"
+__author__ = "Aansh Shah"
 
 # Import core simulation components
 try:

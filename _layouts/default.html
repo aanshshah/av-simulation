@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% seo %}
+    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
+
+    <!-- Additional meta tags -->
+    <meta name="description" content="{{ page.description | default: site.description | default: site.github.project_tagline }}">
+    <meta name="keywords" content="autonomous vehicles, simulation, AI, machine learning, computer vision, lane detection">
+    <meta name="author" content="{{ site.author | default: site.github.owner_name }}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ page.title | default: site.title }}">
+    <meta property="og:description" content="{{ page.description | default: site.description }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:image" content="{{ '/assets/images/og-image.png' | absolute_url }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page.title | default: site.title }}">
+    <meta name="twitter:description" content="{{ page.description | default: site.description }}">
+    <meta name="twitter:image" content="{{ '/assets/images/og-image.png' | absolute_url }}">
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Header -->
+      <header class="page-header" role="banner">
+        <nav class="site-nav">
+          <div class="container">
+            <a href="{{ '/' | relative_url }}" class="site-title">
+              <strong>🚗 {{ site.title | default: site.github.repository_name }}</strong>
+            </a>
+
+            <div class="nav-links">
+              <a href="{{ '/' | relative_url }}">Home</a>
+              <a href="{{ '/documentation.html' | relative_url }}">Documentation</a>
+              <a href="{{ '/examples.html' | relative_url }}">Examples</a>
+              <a href="{{ '/notebooks.html' | relative_url }}">Notebooks</a>
+              <a href="{{ '/api.html' | relative_url }}">API</a>
+              <a href="{{ site.github.repository_url }}" target="_blank">GitHub</a>
+            </div>
+          </div>
+        </nav>
+
+        {% if page.layout == 'default' and page.url == '/' %}
+        <div class="hero-section">
+          <div class="container">
+            <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+            <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
+
+            <div class="hero-actions">
+              {% if site.github.is_project_page %}
+              <a href="{{ site.github.repository_url }}" class="btn btn-primary">View on GitHub</a>
+              {% endif %}
+
+              {% if site.github.zip_url %}
+              <a href="{{ site.github.zip_url }}" class="btn btn-secondary">Download .zip</a>
+              {% endif %}
+
+              {% if site.github.tar_url %}
+              <a href="{{ site.github.tar_url }}" class="btn btn-secondary">Download .tar.gz</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </header>
+
+      <!-- Main content -->
+      <main id="content" class="main-content" role="main">
+        <div class="container">
+          <!-- Breadcrumb navigation -->
+          {% unless page.url == '/' %}
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+              <li><a href="{{ '/' | relative_url }}">Home</a></li>
+              {% if page.url != '/' %}
+              <li aria-current="page">{{ page.title }}</li>
+              {% endif %}
+            </ol>
+          </nav>
+          {% endunless %}
+
+          <!-- Page content -->
+          {{ content }}
+
+          <!-- Page metadata -->
+          {% if site.github.private != true and site.github.license %}
+          <div class="page-metadata">
+            <p>
+              <small>
+                This project is maintained by
+                <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>
+                {% if site.github.license.name %}
+                and is licensed under the {{ site.github.license.name }}.
+                {% endif %}
+              </small>
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-section">
+              <h4>AV Simulation</h4>
+              <p>Educational autonomous vehicle simulation environment for research and learning.</p>
+            </div>
+
+            <div class="footer-section">
+              <h4>Resources</h4>
+              <ul>
+                <li><a href="{{ '/documentation.html' | relative_url }}">Documentation</a></li>
+                <li><a href="{{ '/examples.html' | relative_url }}">Examples</a></li>
+                <li><a href="{{ '/api.html' | relative_url }}">API Reference</a></li>
+                <li><a href="{{ site.github.repository_url }}/issues" target="_blank">Issues</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-section">
+              <h4>Community</h4>
+              <ul>
+                <li><a href="{{ site.github.repository_url }}" target="_blank">GitHub Repository</a></li>
+                <li><a href="{{ site.github.repository_url }}/discussions" target="_blank">Discussions</a></li>
+                <li><a href="{{ site.github.repository_url }}/wiki" target="_blank">Wiki</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <p>
+              &copy; {{ 'now' | date: "%Y" }} {{ site.author | default: site.github.owner_name }}.
+              Published with <a href="https://pages.github.com" target="_blank">GitHub Pages</a>.
+            </p>
+            {% if site.github.is_project_page %}
+            <p>
+              <a href="{{ site.github.repository_url }}" target="_blank">View source on GitHub</a>
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ '/assets/js/scale.fix.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+
+    <!-- Analytics (if configured) -->
+    {% if site.google_analytics %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ site.google_analytics }}');
+    </script>
+    {% endif %}
+  </body>
+</html>
+
+<style>
+/* Layout-specific styles */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.site-nav {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1rem 0;
+}
+
+.site-nav .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white !important;
+  text-decoration: none;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-decoration: none;
+  margin: 0 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white !important;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.hero-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.project-name {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.project-tagline {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.hero-actions {
+  margin-top: 2rem;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.breadcrumb {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.breadcrumb ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb li {
+  margin-right: 0.5rem;
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "›";
+  margin-left: 0.5rem;
+  color: #64748b;
+}
+
+.breadcrumb a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.page-metadata {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.site-footer {
+  background: #1e293b;
+  color: #94a3b8;
+  padding: 3rem 0 1rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+  color: white;
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-top: 1px solid #334155;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .site-nav .container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .nav-links a {
+    margin: 0;
+  }
+
+  .project-name {
+    font-size: 2rem;
+  }
+
+  .project-tagline {
+    font-size: 1rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+</style>

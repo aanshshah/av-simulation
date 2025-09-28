@@ -79,7 +79,7 @@ pygame>=2.1.0
 
 ## 🔗 Links
 
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USERNAME/av-simulation/blob/main/examples/notebooks/01_colab_setup.ipynb)
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aanshshah/av-simulation/blob/main/examples/notebooks/01_colab_setup.ipynb)
 - [Main Simulation Documentation](../README.md)
 - [Data Repository Documentation](../DATA_REPOSITORY_README.md)
 

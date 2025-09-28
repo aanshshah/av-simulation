@@ -13,7 +13,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="av-simulation",
     version="1.0.0",
-    author="AV Simulation Team",
+    author="Aansh Shah",
+    author_email="aansh.shah@gmail.com",
     description="Autonomous Vehicle Simulation Environment",
     long_description=long_description,
     long_description_content_type="text/markdown",
