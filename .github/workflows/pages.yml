@@ -4,8 +4,6 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 # Set permissions for GitHub token
@@ -38,16 +36,7 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: |
-          gem install jekyll bundler
-          bundle init
-          echo 'gem "jekyll", "~> 4.3"' >> Gemfile
-          echo 'gem "minima", "~> 2.5"' >> Gemfile
-          echo 'gem "jekyll-feed", "~> 0.12"' >> Gemfile
-          echo 'gem "jekyll-sitemap", "~> 1.4"' >> Gemfile
-          echo 'gem "jekyll-seo-tag", "~> 2.8"' >> Gemfile
-          echo 'gem "webrick", "~> 1.7"' >> Gemfile
-          bundle install
+        run: bundle install
 
       - name: Build with Jekyll
         run: |

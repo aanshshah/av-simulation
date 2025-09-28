@@ -2,17 +2,13 @@
 
 source "https://rubygems.org"
 
-# Jekyll and plugins
-gem "jekyll", "~> 4.3.0"
-gem "minima", "~> 2.5"
+# GitHub Pages gem includes Jekyll and all compatible plugins
+gem "github-pages", "~> 228", group: :jekyll_plugins
 
-# Jekyll plugins
+# Additional plugins that are GitHub Pages compatible
 gem "jekyll-feed", "~> 0.12"
 gem "jekyll-sitemap", "~> 1.4"
 gem "jekyll-seo-tag", "~> 2.8"
-
-# GitHub Pages compatible theme
-gem "github-pages", "~> 228", group: :jekyll_plugins
 
 # Windows and JRuby compatibility
 platforms :mingw, :x64_mingw, :mswin, :jruby do

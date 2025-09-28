@@ -17,11 +17,12 @@ header_pages:
   - notebooks.md
   - api.md
 
-# Plugins
+# Plugins (GitHub Pages compatible)
 plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-github-metadata
 
 # Markdown settings
 markdown: kramdown
