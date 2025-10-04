@@ -23,9 +23,14 @@ title: "Documentation"
 
 - Python 3.8 or higher
 - pip package manager
-- Git (for cloning the repository)
 
-### Install from Source
+### Option 1: Install from PyPI (Recommended)
+
+```bash
+pip install av-simulation
+```
+
+### Option 2: Install from Source
 
 ```bash
 # Clone the repository
@@ -46,8 +51,8 @@ pip install -r requirements-test.txt
 ### For Google Colab
 
 ```python
-# Install in Colab
-!pip install pygame pyvirtualdisplay pandas matplotlib seaborn plotly scipy scikit-learn pillow
+# Install from PyPI in Colab
+!pip install av-simulation pyvirtualdisplay
 
 # Setup virtual display
 from examples.utils.colab_helpers import quick_colab_setup
@@ -81,6 +86,13 @@ sim.data_repository.export_to_csv("simulation_data.csv")
 
 ### Command Line Usage
 
+**From PyPI Installation:**
+```bash
+# Run main simulation
+av-simulation
+```
+
+**From Source Installation:**
 ```bash
 # Run main simulation
 python src/av_simulation/core/simulation.py

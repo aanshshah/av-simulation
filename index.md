@@ -6,6 +6,7 @@ title: "Autonomous Vehicle Simulation Environment"
 # Autonomous Vehicle Simulation Environment
 
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI](https://img.shields.io/pypi/v/av-simulation)](https://pypi.org/project/av-simulation/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://aanshshah.github.io/av-simulation)
 
@@ -49,6 +50,12 @@ This project recreates the three main case studies from the research paper, prov
 
 ### Installation
 
+**Option 1: Install from PyPI (Recommended)**
+```bash
+pip install av-simulation
+```
+
+**Option 2: Install from Source**
 ```bash
 # Clone the repository
 git clone https://github.com/aanshshah/av-simulation.git
@@ -60,6 +67,12 @@ pip install -r requirements.txt
 
 ### Run the Simulation
 
+**From PyPI Installation:**
+```bash
+av-simulation
+```
+
+**From Source:**
 ```bash
 python src/av_simulation/core/simulation.py
 ```
