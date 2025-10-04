@@ -74,9 +74,34 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Build artifacts
+*.whl
+*.tar.gz
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# GitHub Pages
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Vendor dependencies
+vendor/
+third_party/
+external/
+
 # Project specific
 *.pkl
 *.pickle
 logs/
 checkpoints/
 models/
+test_workflow.py

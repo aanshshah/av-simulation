@@ -5,6 +5,7 @@ author: "Aansh Shah"
 email: "aansh.shah@gmail.com"
 url: "https://aanshshah.github.io"
 baseurl: "/av-simulation"
+repository: "aanshshah/av-simulation"
 
 # Theme settings
 remote_theme: pages-themes/cayman@v0.2.0

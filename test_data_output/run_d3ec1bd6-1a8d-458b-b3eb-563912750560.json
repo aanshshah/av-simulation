@@ -1,0 +1,139 @@
+{
+  "run_id": "d3ec1bd6-1a8d-458b-b3eb-563912750560",
+  "start_time": "2025-10-04T18:21:13.083545",
+  "end_time": "2025-10-04T18:21:13.083573",
+  "environment_type": "highway",
+  "total_duration": 2.8e-05,
+  "metadata": {
+    "test_mode": true
+  },
+  "vehicle_snapshots": [
+    {
+      "vehicle_id": "ego_vehicle",
+      "timestamp": 0.0,
+      "position_x": 0.0,
+      "position_y": 50.0,
+      "velocity_x": 25.0,
+      "velocity_y": 0.0,
+      "acceleration": 0.0,
+      "steering_angle": 0.0,
+      "heading": 0.0,
+      "speed": 25.0,
+      "is_ego": true,
+      "lane_id": 1
+    },
+    {
+      "vehicle_id": "ego_vehicle",
+      "timestamp": 0.1,
+      "position_x": 10.0,
+      "position_y": 50.0,
+      "velocity_x": 25.0,
+      "velocity_y": 0.0,
+      "acceleration": 0.0,
+      "steering_angle": 0.0,
+      "heading": 0.0,
+      "speed": 25.0,
+      "is_ego": true,
+      "lane_id": 1
+    },
+    {
+      "vehicle_id": "ego_vehicle",
+      "timestamp": 0.2,
+      "position_x": 20.0,
+      "position_y": 50.0,
+      "velocity_x": 25.0,
+      "velocity_y": 0.0,
+      "acceleration": 0.0,
+      "steering_angle": 0.0,
+      "heading": 0.0,
+      "speed": 25.0,
+      "is_ego": true,
+      "lane_id": 1
+    },
+    {
+      "vehicle_id": "ego_vehicle",
+      "timestamp": 0.30000000000000004,
+      "position_x": 30.0,
+      "position_y": 50.0,
+      "velocity_x": 25.0,
+      "velocity_y": 0.0,
+      "acceleration": 0.0,
+      "steering_angle": 0.0,
+      "heading": 0.0,
+      "speed": 25.0,
+      "is_ego": true,
+      "lane_id": 1
+    },
+    {
+      "vehicle_id": "ego_vehicle",
+      "timestamp": 0.4,
+      "position_x": 40.0,
+      "position_y": 50.0,
+      "velocity_x": 25.0,
+      "velocity_y": 0.0,
+      "acceleration": 0.0,
+      "steering_angle": 0.0,
+      "heading": 0.0,
+      "speed": 25.0,
+      "is_ego": true,
+      "lane_id": 1
+    }
+  ],
+  "environment_snapshots": [
+    {
+      "timestamp": 0.0,
+      "environment_type": "highway",
+      "active_vehicles": 1,
+      "collision_detected": false,
+      "ego_vehicle_id": "ego_vehicle"
+    },
+    {
+      "timestamp": 0.1,
+      "environment_type": "highway",
+      "active_vehicles": 1,
+      "collision_detected": false,
+      "ego_vehicle_id": "ego_vehicle"
+    },
+    {
+      "timestamp": 0.2,
+      "environment_type": "highway",
+      "active_vehicles": 1,
+      "collision_detected": false,
+      "ego_vehicle_id": "ego_vehicle"
+    },
+    {
+      "timestamp": 0.30000000000000004,
+      "environment_type": "highway",
+      "active_vehicles": 1,
+      "collision_detected": false,
+      "ego_vehicle_id": "ego_vehicle"
+    },
+    {
+      "timestamp": 0.4,
+      "environment_type": "highway",
+      "active_vehicles": 1,
+      "collision_detected": false,
+      "ego_vehicle_id": "ego_vehicle"
+    }
+  ],
+  "collision_events": [
+    {
+      "timestamp": 0.3,
+      "vehicle1_id": "ego_vehicle",
+      "vehicle2_id": "other_vehicle",
+      "collision_point_x": 25.0,
+      "collision_point_y": 50.0,
+      "relative_speed": 10.0,
+      "environment_type": "highway"
+    }
+  ],
+  "action_events": [
+    {
+      "timestamp": 0.2,
+      "vehicle_id": "ego_vehicle",
+      "action": "FASTER",
+      "previous_action": "IDLE",
+      "reason": "speed_control"
+    }
+  ]
+}

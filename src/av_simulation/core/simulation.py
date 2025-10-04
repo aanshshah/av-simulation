@@ -73,6 +73,13 @@ class Action(Enum):
     LANE_RIGHT = 2
     FASTER = 3
     SLOWER = 4
+    # Aliases for test compatibility
+    ACCELERATE = 3    # Alias for FASTER
+    DECELERATE = 4    # Alias for SLOWER
+    BRAKE = 4         # Alias for SLOWER
+    TURN_LEFT = 0     # Alias for LANE_LEFT
+    TURN_RIGHT = 2    # Alias for LANE_RIGHT
+    MAINTAIN = 1      # Alias for IDLE
 
 @dataclass
 class VehicleState:
@@ -84,13 +91,53 @@ class VehicleState:
     heading: float  # Heading angle in radians
     acceleration: float  # Current acceleration
     steering_angle: float  # Current steering angle
+
+    # Constructor that supports both old and new style initialization
+    def __init__(self, x: float, y: float, vx: float = None, vy: float = None,
+                 heading: float = None, acceleration: float = 0, steering_angle: float = 0,
+                 # Legacy parameters for test compatibility
+                 angle: float = None, speed: float = None):
+        self.x = x
+        self.y = y
+
+        # Handle legacy angle/speed parameters
+        if angle is not None:
+            heading = angle
+        if speed is not None:
+            vx = speed if heading is not None else speed
+            vy = 0
+
+        self.vx = vx if vx is not None else 0
+        self.vy = vy if vy is not None else 0
+        self.heading = heading if heading is not None else 0
+        self.acceleration = acceleration
+        self.steering_angle = steering_angle
+
+    @property
+    def angle(self):
+        """Alias for heading for test compatibility"""
+        return self.heading
+
+    @property
+    def speed(self):
+        """Calculate speed from velocity components"""
+        return math.sqrt(self.vx**2 + self.vy**2)
     
 class Vehicle:
     """Base vehicle class with dynamics model"""
     
-    def __init__(self, x: float, y: float, vx: float = 0, vy: float = 0, 
+    def __init__(self, x: float, y: float, vx: float = 0, vy: float = 0,
                  heading: float = 0, color: Tuple[int, int, int] = BLUE,
-                 is_ego: bool = False):
+                 is_ego: bool = False,
+                 # Legacy parameters for test compatibility
+                 angle: float = None, speed: float = None):
+        # Handle legacy parameters
+        if angle is not None:
+            heading = angle
+        if speed is not None:
+            vx = speed
+            vy = 0
+
         self.state = VehicleState(x, y, vx, vy, heading, 0, 0)
         self.color = color
         self.is_ego = is_ego
@@ -100,6 +147,63 @@ class Vehicle:
         self.min_acceleration = ACCELERATION_RANGE[0]
         self.max_steering = STEERING_RANGE[1]
         self.min_steering = STEERING_RANGE[0]
+
+        # Additional properties for test compatibility
+        self._target_speed = speed if speed is not None else DEFAULT_SPEEDS[0]
+        self.is_autonomous = is_ego  # For test compatibility
+
+    # Add properties for test compatibility
+    @property
+    def x(self):
+        return self.state.x
+
+    @x.setter
+    def x(self, value):
+        self.state.x = value
+
+    @property
+    def y(self):
+        return self.state.y
+
+    @y.setter
+    def y(self, value):
+        self.state.y = value
+
+    @property
+    def angle(self):
+        return self.state.heading
+
+    @property
+    def speed(self):
+        return math.sqrt(self.state.vx**2 + self.state.vy**2)
+
+    @property
+    def target_speed(self):
+        return self._target_speed
+
+    @target_speed.setter
+    def target_speed(self, value):
+        self._target_speed = value
+
+    def distance_to(self, other_vehicle):
+        """Calculate distance to another vehicle"""
+        return math.sqrt((self.state.x - other_vehicle.state.x)**2 +
+                        (self.state.y - other_vehicle.state.y)**2)
+
+    def adjust_speed(self, new_speed):
+        """Adjust vehicle speed while maintaining direction"""
+        current_speed = self.speed
+        if current_speed > 0:
+            ratio = new_speed / current_speed
+            self.state.vx *= ratio
+            self.state.vy *= ratio
+        else:
+            self.state.vx = new_speed
+            self.state.vy = 0
+
+    def is_colliding_with(self, other_vehicle):
+        """Check collision with another vehicle"""
+        return self.get_rect().colliderect(other_vehicle.get_rect())
         
     def update(self, dt: float):
         """Update vehicle position using dynamics model from the paper"""
@@ -164,12 +268,15 @@ class Vehicle:
 
 class Environment:
     """Base environment class"""
-    
-    def __init__(self):
+
+    def __init__(self, width: int = SCREEN_WIDTH, height: int = SCREEN_HEIGHT):
         self.vehicles = []
         self.ego_vehicle = None
         self.time = 0
         self.collision_detected = False
+        self.width = width
+        self.height = height
+        self.lanes = []  # For test compatibility
         
     def reset(self):
         """Reset environment to initial state"""
@@ -204,9 +311,9 @@ class Environment:
 
 class HighwayEnvironment(Environment):
     """Highway environment with 4 lanes"""
-    
-    def __init__(self):
-        super().__init__()
+
+    def __init__(self, width: int = SCREEN_WIDTH, height: int = SCREEN_HEIGHT):
+        super().__init__(width, height)
         self.num_lanes = 4
         self.lane_width = 4.0  # meters
         self.road_length = 1000  # meters
@@ -283,9 +390,9 @@ class HighwayEnvironment(Environment):
 
 class MergingEnvironment(Environment):
     """Lane merging environment"""
-    
-    def __init__(self):
-        super().__init__()
+
+    def __init__(self, width: int = SCREEN_WIDTH, height: int = SCREEN_HEIGHT):
+        super().__init__(width, height)
         self.num_lanes = 4
         self.lane_width = 4.0
         self.merge_point = 300  # meters
@@ -392,11 +499,11 @@ class MergingEnvironment(Environment):
 
 class RoundaboutEnvironment(Environment):
     """Roundabout environment with 4 entrances"""
-    
-    def __init__(self):
-        super().__init__()
-        self.center_x = SCREEN_WIDTH / (2 * PIXELS_PER_METER)
-        self.center_y = SCREEN_HEIGHT / (2 * PIXELS_PER_METER)
+
+    def __init__(self, width: int = SCREEN_WIDTH, height: int = SCREEN_HEIGHT):
+        super().__init__(width, height)
+        self.center_x = width / (2 * PIXELS_PER_METER)
+        self.center_y = height / (2 * PIXELS_PER_METER)
         self.outer_radius = 80  # meters
         self.inner_radius = 40  # meters
         self.reset()
@@ -494,7 +601,7 @@ class RoundaboutEnvironment(Environment):
 class BehaviorPlanner:
     """Implements behavioral planning using simplified MDP approach from paper"""
     
-    def __init__(self, environment: Environment):
+    def __init__(self, environment: Environment = None):
         self.environment = environment
         self.current_action = Action.IDLE
         
@@ -536,10 +643,12 @@ class BehaviorPlanner:
         
     def get_nearby_vehicles(self, ego_vehicle: Vehicle) -> List[Vehicle]:
         """Get vehicles within perception distance"""
+        if not self.environment:
+            return []
         nearby = []
         for vehicle in self.environment.vehicles:
             if vehicle != ego_vehicle:
-                distance = math.sqrt((vehicle.state.x - ego_vehicle.state.x)**2 + 
+                distance = math.sqrt((vehicle.state.x - ego_vehicle.state.x)**2 +
                                    (vehicle.state.y - ego_vehicle.state.y)**2)
                 if distance < PERCEPTION_DISTANCE:
                     nearby.append(vehicle)
@@ -616,6 +725,21 @@ class Simulation:
         self.running = True
         self.paused = False
         self.simulation_start_time = 0
+
+    # Add properties for test compatibility
+    @property
+    def environment(self):
+        return self.current_env
+
+    @property
+    def player_vehicle(self):
+        return self.current_env.ego_vehicle if self.current_env else None
+
+    def reset(self):
+        """Reset current environment"""
+        if self.current_env:
+            self.current_env.reset()
+            self.planner = BehaviorPlanner(self.current_env)
         
     def handle_events(self):
         """Handle pygame events"""
