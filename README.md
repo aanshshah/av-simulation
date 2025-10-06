@@ -66,6 +66,10 @@ Based on Case Study 3, implements three driving scenarios:
 - Continuous Ambiguity Prediction for neighboring vehicles
 - Partially Observable MDP (POMDP) implementation
 
+## Dataset Context
+
+The perception and planning experiments mirror the dataset described in **Dixit et al. (2021)**, which blends real-world **camera footage** and **LiDAR point clouds** with procedurally generated **OpenCV/Pygame simulations**. The real captures include labelled vehicles, pedestrians, lane markings, and road curvature across diverse lighting and weather conditions, while the simulated suite covers the highway, lane-merge, and roundabout scenarios implemented in this repository. See [`DATASET_OVERVIEW.md`](DATASET_OVERVIEW.md) or call `av_simulation.data.describe_dataset()` for a programmatic summary of modalities, annotations, and benchmark scenes.
+
 ## Installation
 
 ### Google Colab

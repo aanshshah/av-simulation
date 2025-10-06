@@ -9,13 +9,14 @@ title: "Documentation"
 
 1. [Installation](#installation)
 2. [Quick Start](#quick-start)
-3. [Core Components](#core-components)
-4. [Simulation Environments](#simulation-environments)
-5. [Data Collection](#data-collection)
-6. [Lane Detection](#lane-detection)
-7. [Behavioral Planning](#behavioral-planning)
-8. [Configuration](#configuration)
-9. [Troubleshooting](#troubleshooting)
+3. [Dataset Context](#dataset-context)
+4. [Core Components](#core-components)
+5. [Simulation Environments](#simulation-environments)
+6. [Data Collection](#data-collection)
+7. [Lane Detection](#lane-detection)
+8. [Behavioral Planning](#behavioral-planning)
+9. [Configuration](#configuration)
+10. [Troubleshooting](#troubleshooting)
 
 ## 🚀 Installation
 
@@ -111,6 +112,23 @@ python src/av_simulation/detection/lane_detection.py
 # Run behavioral planning demo
 python src/av_simulation/planning/behavioral_planning.py
 ```
+
+## 📚 Dataset Context
+
+The project recreates the multimodal dataset from **Dixit et al. (2021)**, which combines:
+
+- **Real-world captures** – Forward-facing RGB video and synchronised LiDAR point clouds collected under varied weather/lighting. Labels include vehicles, pedestrians, lane markings, road curvature, and environmental attributes (e.g., rain, dusk).
+- **Simulated episodes** – OpenCV/Pygame renderings for highway cruising, lane merges, and roundabouts that allow deterministic testing of collision-avoidance strategies.
+
+The helper module `av_simulation.data.dataset_info` ships a `describe_dataset()` function that prints a structured summary of modalities, annotations, and scenarios:
+
+```python
+from av_simulation.data import describe_dataset
+
+describe_dataset()
+```
+
+For a narrative overview, see [`DATASET_OVERVIEW.md`](DATASET_OVERVIEW.md).
 
 ## 🔧 Core Components
 
