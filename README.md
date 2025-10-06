@@ -68,11 +68,37 @@ Based on Case Study 3, implements three driving scenarios:
 
 ## Installation
 
-1. Clone or download this repository
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+### Google Colab
+- Open the notebooks in `examples/notebooks/` and run `01_colab_setup.ipynb`.
+- The setup notebook installs a minimal dependency set, downloads the source bundle, and provides links to the runner/analysis notebooks.
+
+### Local (Replicable Environment)
+1. Install Python 3.10 or 3.11. On Apple Silicon, Miniforge/conda-forge builds are recommended.
+2. Create an isolated environment (choose one):
+   ```bash
+   # Option A: python -m venv
+   python3 -m venv .venv
+   source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+   # Option B: uv (reproducible sync)
+   uv venv
+   source .venv/bin/activate
+   ```
+3. Upgrade pip/uv and install the pinned dependency set:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements-local.txt
+   ```
+   > `requirements-local.txt` mirrors the Colab environment but pins versions so Macs, Windows, and Linux hosts share the same builds (pygame, OpenCV, torch, etc.).
+4. Install the library in editable mode so the notebooks/scripts see the local source:
+   ```bash
+   pip install -e .
+   ```
+5. (Optional) Verify the install:
+   ```bash
+   python -m av_simulation.core.simulation --help  # quick import smoke test
+   pytest tests                                  # if pytest is available
+   ```
 
 ## Usage
 

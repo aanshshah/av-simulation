@@ -21,40 +21,48 @@ title: "Documentation"
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip package manager
+- Python 3.10 or 3.11 (Miniforge/conda-forge builds recommended on Apple Silicon)
+- git (if you plan to clone the repository)
+- An environment manager (`python -m venv`, `uv`, or `conda`)
 
-### Option 1: Install from PyPI (Recommended)
-
-```bash
-pip install av-simulation
-```
-
-### Option 2: Install from Source
+### Option 1: Reproducible Local Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/aanshshah/av-simulation.git
 cd av-simulation
 
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Create and activate an isolated environment
+python3 -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+# uv alternative
+# uv venv && source .venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install pinned dependencies and the package
+pip install --upgrade pip
+pip install -r requirements-local.txt
+pip install -e .
 
-# Optional: Install development dependencies
-pip install -r requirements-test.txt
+# Optional smoke tests
+python -m av_simulation.core.simulation --help
+pytest tests  # requires pytest
 ```
 
-### For Google Colab
+`requirements-local.txt` mirrors the Colab environment but pins versions so macOS, Windows, and Linux hosts resolve the same wheels (pygame, OpenCV, torch, etc.).
+
+### Option 2: Install from PyPI (Quick Evaluation)
+
+```bash
+pip install av-simulation
+```
+
+### Option 3: Google Colab
 
 ```python
-# Install from PyPI in Colab
+# Install in Colab
 !pip install av-simulation pyvirtualdisplay
 
-# Setup virtual display
+# Or use the bundled helpers
 from examples.utils.colab_helpers import quick_colab_setup
 runner = quick_colab_setup()
 ```
@@ -98,7 +106,7 @@ av-simulation
 python src/av_simulation/core/simulation.py
 
 # Run lane detection demo
-python src/av_simulation/perception/lane_detection.py
+python src/av_simulation/detection/lane_detection.py
 
 # Run behavioral planning demo
 python src/av_simulation/planning/behavioral_planning.py

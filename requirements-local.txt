@@ -1,0 +1,15 @@
+# Pinned dependencies for repeatable local installs
+pygame==2.5.2
+numpy==1.24.4
+pandas==1.5.3
+matplotlib==3.7.1
+seaborn==0.12.2
+plotly==5.18.0
+scipy==1.10.1
+scikit-learn==1.2.2
+pillow==10.0.0
+pyvirtualdisplay==3.0
+opencv-python==4.8.1.78
+torch==2.0.1
+torchvision==0.15.2
+packaging==23.2

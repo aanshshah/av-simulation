@@ -1,14 +1,34 @@
 """
 Helper functions for running AV simulation in Google Colab environment.
+
+This module provides enhanced compatibility with Google Colab and includes
+robust error handling, dynamic path detection, and memory management.
 """
 
 import os
 import sys
 import time
 import threading
+from typing import Optional, Dict, List, Any, Tuple
 from PIL import Image
 import matplotlib.pyplot as plt
 import pygame
+import numpy as np
+
+try:
+    from .colab_setup_utils import (
+        ColabEnvironmentDetector,
+        ColabDependencyManager,
+        ColabDisplayManager as BaseColabDisplayManager,
+        ColabProjectManager
+    )
+except ImportError:
+    # Fallback for when colab_setup_utils is not available
+    print("⚠️ colab_setup_utils not available, using basic functionality")
+    ColabEnvironmentDetector = None
+    ColabDependencyManager = None
+    BaseColabDisplayManager = None
+    ColabProjectManager = None
 
 
 class ColabDisplayManager:
@@ -76,11 +96,13 @@ class ColabDisplayManager:
 class ColabSimulationRunner:
     """Enhanced simulation runner for Colab environment"""
 
-    def __init__(self, display_manager=None):
+    def __init__(self, display_manager=None, max_screenshots: int = 50):
         self.display_manager = display_manager or ColabDisplayManager()
         self.screenshots = []
+        self.max_screenshots = max_screenshots
         self.simulation_data = {}
         self.running = False
+        self.env_detector = ColabEnvironmentDetector() if ColabEnvironmentDetector else None
 
     def setup_environment(self):
         """Setup complete Colab environment"""
@@ -94,9 +116,17 @@ class ColabSimulationRunner:
         if not self.display_manager.test_pygame():
             return False
 
-        # Setup paths
-        if '/content' in os.getcwd():
-            sys.path.insert(0, '/content/av-simulation/src')
+        # Setup paths dynamically
+        if ColabEnvironmentDetector:
+            detector = ColabEnvironmentDetector()
+            sim_path = detector.get_simulation_path()
+            if sim_path not in sys.path:
+                sys.path.insert(0, sim_path)
+                print(f"📁 Added to Python path: {sim_path}")
+        else:
+            # Fallback to original behavior
+            if '/content' in os.getcwd():
+                sys.path.insert(0, '/content/av-simulation/src')
 
         print("✅ Colab environment ready")
         return True
@@ -113,6 +143,11 @@ class ColabSimulationRunner:
             'metadata': metadata or {}
         }
 
+        # Implement circular buffer for memory management
+        if len(self.screenshots) >= self.max_screenshots:
+            self.screenshots.pop(0)  # Remove oldest screenshot
+            print(f"🗑️ Removed old screenshot (keeping last {self.max_screenshots})")
+
         self.screenshots.append(screenshot_data)
         return screenshot_data
 
@@ -123,8 +158,14 @@ class ColabSimulationRunner:
         # Import here to avoid issues
         try:
             from av_simulation.core.simulation import Simulation
+            print("✅ Simulation module imported successfully")
         except ImportError as e:
             print(f"❌ Import failed: {e}")
+            print("💡 Suggestions:")
+            print("  1. Run the setup cells in 01_colab_setup.ipynb first")
+            print("  2. Upload simulation files manually")
+            print("  3. Clone from GitHub if repository is public")
+            print("  4. Check that av_simulation package is in Python path")
             return None
 
         # Create simulation
@@ -173,4 +214,224 @@ class ColabSimulationRunner:
                         'environment': env_type,
                         'ego_speed': sim.current_env.ego_vehicle.state.vx if sim.current_env.ego_vehicle else 0,
                         'collision': sim.current_env.collision_detected
-                    }\n                    \n                    self.capture_screenshot(sim.screen, metadata)\n                    last_screenshot = current_time\n                    \n                    print(f\"📸 Screenshot at t={current_time:.1f}s\")\n                \n                time.sleep(1/60)\n            \n            # Save final data\n            if sim.data_collection_enabled and sim.current_run_id:\n                sim.data_repository.end_current_run()\n                print(f\"💾 Data saved: {sim.current_run_id}\")\n            \n            pygame.quit()\n            \n            return {\n                'run_id': sim.current_run_id if sim.data_collection_enabled else None,\n                'repository': sim.data_repository if sim.data_collection_enabled else None,\n                'screenshots': len(self.screenshots),\n                'duration': time.time() - start_time\n            }\n            \n        except Exception as e:\n            print(f\"❌ Simulation error: {e}\")\n            pygame.quit()\n            return None\n    \n    def display_screenshots(self, max_images=6, figsize=(15, 10)):\n        \"\"\"Display captured screenshots in a grid\"\"\"\n        if not self.screenshots:\n            print(\"No screenshots to display\")\n            return\n        \n        n_images = min(len(self.screenshots), max_images)\n        cols = 3\n        rows = (n_images + cols - 1) // cols\n        \n        fig, axes = plt.subplots(rows, cols, figsize=figsize)\n        if rows == 1:\n            axes = [axes] if cols == 1 else axes\n        else:\n            axes = axes.flatten()\n        \n        for i in range(n_images):\n            screenshot = self.screenshots[i]\n            axes[i].imshow(screenshot['image'])\n            \n            # Create title with metadata\n            metadata = screenshot['metadata']\n            title = f\"t={metadata.get('simulation_time', 0):.1f}s\"\n            if metadata.get('collision', False):\n                title += \" (COLLISION!)\"\n                axes[i].set_facecolor('red')\n            \n            axes[i].set_title(title)\n            axes[i].axis('off')\n        \n        # Hide empty subplots\n        for i in range(n_images, len(axes)):\n            axes[i].axis('off')\n        \n        plt.tight_layout()\n        plt.show()\n    \n    def export_screenshots(self, output_dir=\"screenshots\"):\n        \"\"\"Export screenshots to files\"\"\"\n        if not self.screenshots:\n            print(\"No screenshots to export\")\n            return\n        \n        os.makedirs(output_dir, exist_ok=True)\n        \n        for i, screenshot in enumerate(self.screenshots):\n            filename = f\"screenshot_{i:03d}.png\"\n            filepath = os.path.join(output_dir, filename)\n            screenshot['image'].save(filepath)\n        \n        print(f\"📁 Exported {len(self.screenshots)} screenshots to {output_dir}\")\n        return output_dir\n    \n    def cleanup(self):\n        \"\"\"Cleanup resources\"\"\"\n        if self.display_manager:\n            self.display_manager.cleanup()\n        \n        self.screenshots.clear()\n        print(\"🧹 Simulation runner cleaned up\")\n\n\ndef install_colab_dependencies():\n    \"\"\"Install required packages for Colab\"\"\"\n    packages = [\n        \"pygame\",\n        \"pyvirtualdisplay\",\n        \"pandas\",\n        \"matplotlib\",\n        \"seaborn\",\n        \"plotly\",\n        \"scipy\",\n        \"scikit-learn\",\n        \"pillow\"\n    ]\n    \n    print(\"📦 Installing Colab dependencies...\")\n    \n    import subprocess\n    import sys\n    \n    for package in packages:\n        try:\n            subprocess.check_call([sys.executable, \"-m\", \"pip\", \"install\", package])\n            print(f\"✅ {package}\")\n        except subprocess.CalledProcessError:\n            print(f\"❌ {package}\")\n    \n    print(\"📦 Installation complete\")\n\n\ndef setup_colab_environment():\n    \"\"\"Complete Colab environment setup\"\"\"\n    print(\"🔧 Setting up complete Colab environment...\")\n    \n    # Install system dependencies\n    import subprocess\n    subprocess.run([\"apt-get\", \"update\"], capture_output=True)\n    subprocess.run([\"apt-get\", \"install\", \"-y\", \"xvfb\", \"python3-opengl\"], capture_output=True)\n    \n    # Install Python packages\n    install_colab_dependencies()\n    \n    # Setup display manager\n    display_manager = ColabDisplayManager()\n    if not display_manager.setup_virtual_display():\n        return None\n    \n    # Test setup\n    if not display_manager.test_pygame():\n        return None\n    \n    print(\"✅ Colab environment fully configured\")\n    return display_manager\n\n\ndef download_simulation_code(repo_url=\"https://github.com/aanshshah/av-simulation.git\"):\n    \"\"\"Download simulation code from repository\"\"\"\n    print(f\"📥 Downloading simulation code from {repo_url}\")\n    \n    import subprocess\n    \n    try:\n        # Clone repository\n        result = subprocess.run([\"git\", \"clone\", repo_url], \n                              capture_output=True, text=True)\n        \n        if result.returncode == 0:\n            print(\"✅ Code downloaded successfully\")\n            return True\n        else:\n            print(f\"❌ Git clone failed: {result.stderr}\")\n            return False\n            \n    except FileNotFoundError:\n        print(\"❌ Git not available\")\n        return False\n    except Exception as e:\n        print(f\"❌ Download failed: {e}\")\n        return False\n\n\n# Convenience functions for quick setup\ndef quick_colab_setup():\n    \"\"\"One-command Colab setup\"\"\"\n    print(\"🚀 Quick Colab Setup for AV Simulation\")\n    print(\"=\" * 50)\n    \n    # Setup environment\n    display_manager = setup_colab_environment()\n    if not display_manager:\n        print(\"❌ Environment setup failed\")\n        return None\n    \n    # Create runner\n    runner = ColabSimulationRunner(display_manager)\n    \n    print(\"✅ Quick setup complete!\")\n    print(\"\\n📋 Next steps:\")\n    print(\"1. Upload your simulation files or clone from GitHub\")\n    print(\"2. Use runner.run_headless_simulation(config) to run simulations\")\n    print(\"3. Use runner.display_screenshots() to view results\")\n    \n    return runner\n\n\nif __name__ == \"__main__\":\n    # Test the setup\n    runner = quick_colab_setup()\n    if runner:\n        print(\"\\n🎉 Colab helpers ready to use!\")\n    else:\n        print(\"\\n❌ Setup failed - check error messages above\")
+                    }
+
+                    self.capture_screenshot(sim.screen, metadata)
+                    last_screenshot = current_time
+
+                    print(f"📸 Screenshot at t={current_time:.1f}s")
+
+                time.sleep(1/60)
+
+            # Save final data
+            if sim.data_collection_enabled and sim.current_run_id:
+                sim.data_repository.end_current_run()
+                print(f"💾 Data saved: {sim.current_run_id}")
+
+            pygame.quit()
+
+            return {
+                'run_id': sim.current_run_id if sim.data_collection_enabled else None,
+                'repository': sim.data_repository if sim.data_collection_enabled else None,
+                'screenshots': len(self.screenshots),
+                'duration': time.time() - start_time
+            }
+
+        except Exception as e:
+            print(f"❌ Simulation error: {e}")
+            pygame.quit()
+            return None
+
+    def display_screenshots(self, max_images=6, figsize=(15, 10)):
+        """Display captured screenshots in a grid"""
+        if not self.screenshots:
+            print("No screenshots to display")
+            return
+
+        n_images = min(len(self.screenshots), max_images)
+        cols = 3
+        rows = (n_images + cols - 1) // cols
+
+        fig, axes = plt.subplots(rows, cols, figsize=figsize)
+        if rows == 1:
+            axes = [axes] if cols == 1 else axes
+        else:
+            axes = axes.flatten()
+
+        for i in range(n_images):
+            screenshot = self.screenshots[i]
+            axes[i].imshow(screenshot['image'])
+
+            # Create title with metadata
+            metadata = screenshot['metadata']
+            title = f"t={metadata.get('simulation_time', 0):.1f}s"
+            if metadata.get('collision', False):
+                title += " (COLLISION!)"
+                axes[i].set_facecolor('red')
+
+            axes[i].set_title(title)
+            axes[i].axis('off')
+
+        # Hide empty subplots
+        for i in range(n_images, len(axes)):
+            axes[i].axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
+    def export_screenshots(self, output_dir="screenshots"):
+        """Export screenshots to files"""
+        if not self.screenshots:
+            print("No screenshots to export")
+            return
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        for i, screenshot in enumerate(self.screenshots):
+            filename = f"screenshot_{i:03d}.png"
+            filepath = os.path.join(output_dir, filename)
+            screenshot['image'].save(filepath)
+
+        print(f"📁 Exported {len(self.screenshots)} screenshots to {output_dir}")
+        return output_dir
+
+    def cleanup(self):
+        """Cleanup resources"""
+        if self.display_manager:
+            self.display_manager.cleanup()
+
+        self.screenshots.clear()
+        print("🧹 Simulation runner cleaned up")
+
+
+def install_colab_dependencies():
+    """Install required packages for Colab"""
+    packages = [
+        "pygame",
+        "pyvirtualdisplay",
+        "pandas",
+        "matplotlib",
+        "seaborn",
+        "plotly",
+        "scipy",
+        "scikit-learn",
+        "pillow"
+    ]
+
+    print("📦 Installing Colab dependencies...")
+
+    import subprocess
+    import sys
+
+    for package in packages:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+            print(f"✅ {package}")
+        except subprocess.CalledProcessError:
+            print(f"❌ {package}")
+
+    print("📦 Installation complete")
+
+
+def setup_colab_environment():
+    """Complete Colab environment setup"""
+    print("🔧 Setting up complete Colab environment...")
+
+    # Install system dependencies
+    import subprocess
+    subprocess.run(["apt-get", "update"], capture_output=True)
+    subprocess.run(["apt-get", "install", "-y", "xvfb", "python3-opengl"], capture_output=True)
+
+    # Install Python packages
+    install_colab_dependencies()
+
+    # Setup display manager
+    display_manager = ColabDisplayManager()
+    if not display_manager.setup_virtual_display():
+        return None
+
+    # Test setup
+    if not display_manager.test_pygame():
+        return None
+
+    print("✅ Colab environment fully configured")
+    return display_manager
+
+
+def download_simulation_code(repo_url="https://github.com/aanshshah/av-simulation.git"):
+    """Download simulation code from repository"""
+    print(f"📥 Downloading simulation code from {repo_url}")
+
+    import subprocess
+
+    try:
+        # Clone repository
+        result = subprocess.run(["git", "clone", repo_url],
+                              capture_output=True, text=True)
+
+        if result.returncode == 0:
+            print("✅ Code downloaded successfully")
+            return True
+        else:
+            print(f"❌ Git clone failed: {result.stderr}")
+            return False
+
+    except FileNotFoundError:
+        print("❌ Git not available")
+        return False
+    except Exception as e:
+        print(f"❌ Download failed: {e}")
+        return False
+
+
+# Convenience functions for quick setup
+def quick_colab_setup(download_code: bool = False, repo_url: str = "https://github.com/aanshshah/av-simulation.git"):
+    """Enhanced one-command Colab setup with better error handling"""
+    print("🚀 Quick Colab Setup for AV Simulation")
+    print("=" * 50)
+
+    # Use enhanced setup if available
+    if ColabEnvironmentDetector:
+        try:
+            from .colab_setup_utils import ColabSetupCoordinator
+            coordinator = ColabSetupCoordinator()
+            results = coordinator.run_complete_setup(download_code=download_code, repo_url=repo_url)
+
+            if results.get('display_setup', False):
+                runner = ColabSimulationRunner(coordinator.display_manager)
+                print("\n✅ Enhanced setup complete!")
+                print("\n📋 Next steps:")
+                print("1. Use runner.run_headless_simulation(config) to run simulations")
+                print("2. Use runner.display_screenshots() to view results")
+                return runner
+            else:
+                print("❌ Setup failed - check error messages above")
+                return None
+        except Exception as e:
+            print(f"⚠️ Enhanced setup failed, falling back to basic setup: {e}")
+
+    # Fallback to original setup
+    print("\n🔄 Using basic setup...")
+    display_manager = setup_colab_environment()
+    if not display_manager:
+        print("❌ Environment setup failed")
+        return None
+
+    runner = ColabSimulationRunner(display_manager)
+
+    print("✅ Basic setup complete!")
+    print("\n📋 Next steps:")
+    print("1. Upload your simulation files or clone from GitHub")
+    print("2. Use runner.run_headless_simulation(config) to run simulations")
+    print("3. Use runner.display_screenshots() to view results")
+
+    return runner
+
+
+if __name__ == "__main__":
+    # Test the setup
+    runner = quick_colab_setup()
+    if runner:
+        print("\n🎉 Colab helpers ready to use!")
+    else:
+        print("\n❌ Setup failed - check error messages above")
